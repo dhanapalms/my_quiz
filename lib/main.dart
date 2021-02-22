@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -42,10 +46,19 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
+            ElevatedButton(onPressed: addData, child: Text('Add to FB'))
           ],
         ),
       ),
 // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void addData() {
+    print('inside');
+    Map<String, dynamic> data = {'mob': 912334343};
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection('computer_science');
+    collectionReference.add(data);
   }
 }
