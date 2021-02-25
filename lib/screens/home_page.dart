@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_quiz/model/questions.dart';
@@ -70,13 +71,27 @@ class _HomePageState extends State<HomePage> {
                 ? RaisedButton(
                     child: Text('Submit'),
                     color: Colors.green,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => SubmitPage(
-                                    length: widget.questions.length,
-                                  )));
+                    onPressed: () async {
+                      var connectivityResult =
+                          await (Connectivity().checkConnectivity());
+
+                      if ((connectivityResult == ConnectivityResult.mobile) ||
+                          (connectivityResult == ConnectivityResult.wifi)) {
+                        print('Internet connection is there, hence submitting');
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => SubmitPage(
+                                      length: widget.questions.length,
+                                    )));
+                      } else {
+                        print('Internet connection is NOT there, please check');
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content:
+                              Text('No internet, please check your network'),
+                          duration: Duration(seconds: 2),
+                        ));
+                      }
                     },
                   )
                 : Text(''),

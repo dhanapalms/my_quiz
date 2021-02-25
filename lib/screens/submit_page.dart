@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:connectivity/connectivity.dart';
 
 class SubmitPage extends StatefulWidget {
   final int length;
@@ -41,15 +42,27 @@ class _SubmitPageState extends State<SubmitPage> {
               size: 150,
             ),
             Text(
-              ' Mark :- $t / ${widget.length}',
+              ' Mark : $t / ${widget.length}',
               style: TextStyle(fontSize: 35.0),
             )
           ],
         )),
       ),
       bottomNavigationBar: ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          var connectivityResult = await (Connectivity().checkConnectivity());
+          if ((connectivityResult == ConnectivityResult.mobile) ||
+              (connectivityResult == ConnectivityResult.wifi)) {
+            print('Internet connection is there, hence submitting');
+
+            Navigator.pop(context);
+          } else {
+            print('Internet connection is NOT there, please check');
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('No internet, please check your network'),
+              duration: Duration(seconds: 2),
+            ));
+          }
         },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
